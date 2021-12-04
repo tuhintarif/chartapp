@@ -1,0 +1,114 @@
+{% extends 'app/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+      <div class="col-md-4">
+        <div class="container">
+            <div class="row">
+                <table class="table table-bordered">
+                    <thead class="thead-light">
+                      <tr>
+                        <th scope="col">label</th>
+                        <th scope="col">target</th>
+                        <th scope="col">policy</th>
+                        <th scope="col">practice</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for subject in subjects %} 
+                        
+                        <tr>
+                            <th>{{ subject.label }}</th>
+                            <td>{{ subject.target }}</td>
+
+                            {% if subject.policy > subject.target %}
+                                <td class="table-success">{{ subject.policy }}</td>
+                            {% elif subject.policy == subject.target %}
+                                <td>{{ subject.policy }}</td>
+                            {% else %}
+                                <td class="table-danger">{{ subject.policy }}</td>
+                            {% endif %}
+
+
+                            {% if subject.practice > subject.target %}
+                                <td class="table-success">{{ subject.practice }}</td>
+                            {% elif subject.practice == subject.target %}
+                                <td>{{ subject.practice }}</td>
+                            {% else %}
+                                <td class="table-danger">{{ subject.practice }}</td>
+                            {% endif %}
+                        </tr>
+                        
+                        {% endfor %}
+                    </tbody>
+                  </table>
+            </div>
+            <div class="row">
+                <h3>Add Data</h3>
+                <hr>
+                <form action="" , method="POST">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <input class="btn btn-success mt-2" type="submit", value="Add Data">
+                </form>
+            </div>
+          </div>
+      </div>
+      <div class="col-md-8">
+        <canvas id="myChart" width="400" height="300"></canvas>
+        <script>
+        const ctx = document.getElementById('myChart').getContext('2d'); 
+        const myChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: [{% for subject in subjects %} '{{ subject.label }}' ,{% endfor %}],
+                datasets: [{
+                    label: 'Target Score',
+                    data: [{% for subject in subjects %} '{{ subject.target }}', {% endfor %}],
+                    // data: [65, 59, 90, 81, 56, 55],
+                    fill: true,
+                    backgroundColor: 'rgba(0, 0, 0, 0.0)',
+                    borderColor: 'rgb(255, 99, 132)',
+                    pointBackgroundColor: 'rgb(255, 99, 132)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgb(255, 99, 132)'
+                }, {
+                    label: 'Policy Score',
+                    data: [{% for subject in subjects %} '{{ subject.policy }}', {% endfor %}],
+                    fill: true,
+                    backgroundColor: 'rgba(0, 0, 0, 0.0)',
+                    borderColor: 'rgb(54, 162, 235)',
+                    pointBackgroundColor: 'rgb(54, 162, 235)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgb(54, 162, 235)'
+                }, {
+                    label: 'Practice Score',
+                    data: [{% for subject in subjects %} '{{ subject.practice }}', {% endfor %}],
+                    fill: true,
+                    backgroundColor: 'rgba(0, 0, 0, 0.0)',
+                    borderColor: 'rgb(34, 114, 55)',
+                    pointBackgroundColor: 'rgb(34, 114, 55)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgb(34, 114, 55)'
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+        </script>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
